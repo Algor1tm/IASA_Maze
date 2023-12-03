@@ -1,0 +1,7 @@
+# Visual Studio files
+.vs/
+*.vcxproj.user
+
+# Binaries
+bin/
+bin-int/
