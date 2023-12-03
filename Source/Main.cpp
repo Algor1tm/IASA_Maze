@@ -1,9 +1,13 @@
-#include <iostream>
+#include "Application.h"
 
 
 int main(int argc, char** argv)
 {
-	std::cout << "MAZE\n";
+	Application* app = new Application();
+
+	app->Run();
+
+	delete app;
 
 	return EXIT_SUCCESS;
 }
