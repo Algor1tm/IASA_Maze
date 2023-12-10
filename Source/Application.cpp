@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include "GameLayer.h"
+#include "UILayer.h"
 #include "Debug.h"
 
 #include <thread>
@@ -13,6 +15,14 @@ Application::Application()
 	s_Instance = this;
 
 	SetFPSLimit(1.f); // 1 frames per second
+
+	GameLayer* gameLayer = new GameLayer();
+	UILayer* uiLayer = new UILayer();
+
+	uiLayer->SetContext(gameLayer->GetMaze());
+
+	m_Layers.push_back(uiLayer);
+	m_Layers.push_back(gameLayer);
 }
 
 Application::~Application()
