@@ -12,7 +12,7 @@ public:
 
 	virtual void OnUpdate() override;
 
-	Maze* GetMaze() { return m_Maze; }
+	const Maze* GetMaze() const { return m_Maze; }
 
 private:
 	Maze* m_Maze;

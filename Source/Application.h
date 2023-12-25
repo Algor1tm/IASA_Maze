@@ -14,6 +14,9 @@ public:
 	Application();
 	~Application();
 
+	Application(const Application&) = delete;
+	Application(Application&&) = delete;
+
 	void Run();
 
 	void QueueGameEvent(GameEvent event);
