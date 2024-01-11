@@ -18,7 +18,9 @@ public:
 
 	void SetFinish(int x, int y);
 	void SetStartPos(int x, int y);
-	std::vector<std::vector<Cell>> Build(int width, int height);
+	void SetSize(int width, int height);
+
+	std::vector<std::vector<Cell>> Build();
 
 private:
 	void DFS(int x, int y);

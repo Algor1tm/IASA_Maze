@@ -6,8 +6,6 @@
 MazeGenerator::MazeGenerator()
 {
 	m_Directions = { 0, 1, 2, 3 };
-	m_Width = 0;
-	m_Height = 0;
 }
 
 void MazeGenerator::SetFinish(int x, int y)
@@ -22,15 +20,19 @@ void MazeGenerator::SetStartPos(int x, int y)
 	m_StartPosY = y;
 }
 
-std::vector<std::vector<Cell>> MazeGenerator::Build(int width, int height)
+void MazeGenerator::SetSize(int width, int height)
 {
 	m_Width = width;
 	m_Height = height;
+}
+
+std::vector<std::vector<Cell>> MazeGenerator::Build()
+{
 	// Initialize maze with walls
-	m_Cells.resize(width);
+	m_Cells.resize(m_Width);
 	for (std::vector<Cell>& row : m_Cells)
 	{
-		row.resize(height);
+		row.resize(m_Height);
 		for (Cell& cell : row)
 		{
 			cell.Type = CellType::Blocked;

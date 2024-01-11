@@ -12,8 +12,9 @@ Maze::Maze()
 	MazeGenerator generator;
 	generator.SetStartPos(m_Robot->GetCoordX(), m_Robot->GetCoordY());
 	generator.SetFinish(width / 2, height / 2);
+	generator.SetSize(width, height);
 
-	m_Cells = generator.Build(width, height);
+	m_Cells = generator.Build();
 }
 
 Maze::~Maze()
