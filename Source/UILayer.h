@@ -4,7 +4,7 @@
 #include "Maze.h"
 
 
-class UILayer: public Layer
+class UILayer : public Layer
 {
 public:
 	UILayer();
@@ -12,6 +12,9 @@ public:
 
 	void SetContext(const Maze* maze) { m_Maze = maze; }
 	virtual void OnUpdate() override;
+
+private:
+	char CellToChar(Cell cell);
 
 private:
 	const Maze* m_Maze = nullptr;
