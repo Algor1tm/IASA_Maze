@@ -3,7 +3,7 @@
 
 Maze::Maze()
 {
-	m_Robot = new Robot(this);
+	m_Robot = new Robot(this, 0, 0);
 
 	// TODO: Generate random Maze
 	// Find algorithm in the Internet

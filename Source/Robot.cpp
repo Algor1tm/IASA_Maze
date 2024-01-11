@@ -4,8 +4,8 @@
 #include <iostream>
 
 
-Robot::Robot(Maze* maze)
-	: m_Maze(maze)
+Robot::Robot(Maze* maze, int startX, int startY)
+	: m_Maze(maze), m_CoordX(startX), m_CoordY(startY)
 {
 
 }

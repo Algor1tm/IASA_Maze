@@ -7,10 +7,14 @@ class Maze;
 class Robot
 {
 public:
-	Robot(Maze* maze);
+	Robot(Maze* maze, int startX, int startY);
+
+	int GetCoordX() const { return m_CoordX; }
+	int GetCoordY() const { return m_CoordY; }
 
 	void Step();
 
 private:
 	Maze* m_Maze;
+	int m_CoordX, m_CoordY;
 };

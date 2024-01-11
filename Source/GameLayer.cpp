@@ -16,5 +16,4 @@ GameLayer::~GameLayer()
 void GameLayer::OnUpdate()
 {
 	m_Maze->Step();
-	std::cout << "GameLayer::OnUpdate()\n\n";
 }

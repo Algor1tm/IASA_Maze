@@ -23,10 +23,14 @@ public:
 	Maze();
 	~Maze();
 
-	unsigned int GetWidth() { return (unsigned int)m_Cells[0].size(); }
-	unsigned int GetHeight() { return (unsigned int)m_Cells.size(); }
+	int GetWidth() const { return (int)m_Cells[0].size(); }
+	int GetHeight() const { return (int)m_Cells.size(); }
 
-	Cell GetCell(unsigned int x, unsigned int y) { return m_Cells[y][x]; };
+	bool IsValid(int x, int y) const;
+	bool IsWall(int x, int y) const;
+
+	Cell GetCell(int x, int y) const { return m_Cells[x][y]; };
+	const Robot* GetRobot() const { return m_Robot; }
 
 	void Step();
 
