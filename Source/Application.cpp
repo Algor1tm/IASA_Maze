@@ -23,6 +23,8 @@ Application::Application()
 
 	m_Layers.push_back(uiLayer);
 	m_Layers.push_back(gameLayer);
+
+	QueueGameEvent(GameEvent::Start);
 }
 
 Application::~Application()

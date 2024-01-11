@@ -17,3 +17,11 @@ void GameLayer::OnUpdate()
 {
 	m_Maze->Step();
 }
+
+void GameLayer::OnGameEvent(GameEvent event)
+{
+	if (event == GameEvent::Start)
+	{
+		m_Maze->Start();
+	}
+}

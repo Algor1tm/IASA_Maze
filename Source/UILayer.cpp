@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include <iostream>
+#include <thread>
 
 
 UILayer::UILayer()
@@ -38,7 +39,27 @@ void UILayer::OnUpdate()
 		std::cout << std::endl;
 	}
 
-	std::cout << std::endl << std::endl << std::endl << std::endl;
+	std::cout << std::endl << std::endl << std::endl;
+}
+
+void UILayer::OnGameEvent(GameEvent event)
+{
+	using namespace std::chrono;
+
+	if (event == GameEvent::Start)
+	{
+		const Robot* robot = m_Maze->GetRobot();
+
+		std::cout << "--------------------MAZE SIMULATION--------------------\n";
+		std::cout << "Maze: width = " << m_Maze->GetWidth() << ", height = " << m_Maze->GetHeight() << std::endl;
+		std::cout << "Robot 1: start pos = (" << robot->GetCoordX() << ", " << robot->GetCoordY() << ")\n";
+
+		const int seconds = 5;
+		std::cout << "Start in " << seconds << " seconds!\n\n\n";
+
+		steady_clock::time_point timePoint = high_resolution_clock::now() + std::chrono::seconds(seconds);
+		std::this_thread::sleep_until(timePoint);
+	}
 }
 
 char UILayer::CellToChar(Cell cell)

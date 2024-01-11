@@ -10,8 +10,10 @@ public:
 	UILayer();
 	~UILayer();
 
-	void SetContext(const Maze* maze) { m_Maze = maze; }
 	virtual void OnUpdate() override;
+	virtual void OnGameEvent(GameEvent event) override;
+
+	void SetContext(const Maze* maze) { m_Maze = maze; }
 
 private:
 	char CellToChar(Cell cell);

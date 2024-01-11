@@ -6,4 +6,6 @@
 enum class GameEvent
 {
 	Close,
+	Start,
+	Finish
 };
