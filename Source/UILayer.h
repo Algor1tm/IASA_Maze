@@ -4,7 +4,7 @@
 #include "Maze.h"
 
 
-class UILayer : public Layer
+class UILayer: public Layer
 {
 public:
 	UILayer();

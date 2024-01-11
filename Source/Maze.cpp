@@ -1,43 +1,19 @@
 #include "Maze.h"
+#include "MazeGenerator.h"
 
 
 Maze::Maze()
 {
 	m_Robot = new Robot(this, 0, 0);
 
-	// TODO: Generate random Maze
-	// Find algorithm in the Internet
+	unsigned int width = 40;
+	unsigned int height = 20;
 
+	MazeGenerator generator;
+	generator.SetStartPos(m_Robot->GetCoordX(), m_Robot->GetCoordY());
+	generator.SetFinish(width / 2, height / 2);
 
-	// Example of maze, you can use it for check UI and path finder correctness
-
-	// maze 5x5
-	// #   # # #
-	// #   # # #
-	// #       #
-	// # # #   ! 
-	// # # # # # 
-
-	unsigned int height = 5;
-	unsigned int width = 5;
-
-	m_Cells.resize(height);
-	for (std::vector<Cell>& row : m_Cells)
-	{
-		row.resize(width);
-		for (Cell& cell : row)
-		{
-			cell.Type = CellType::Blocked;
-		}
-	}
-
-	m_Cells[0][1].Type = CellType::Free;
-	m_Cells[1][1].Type = CellType::Free;
-	m_Cells[2][1].Type = CellType::Free;
-	m_Cells[2][2].Type = CellType::Free;
-	m_Cells[2][3].Type = CellType::Free;
-	m_Cells[3][3].Type = CellType::Free;
-	m_Cells[3][4].Type = CellType::Finish;
+	m_Cells = generator.Build(width, height);
 }
 
 Maze::~Maze()

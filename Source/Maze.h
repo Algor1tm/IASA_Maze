@@ -23,11 +23,8 @@ public:
 	Maze();
 	~Maze();
 
-	int GetWidth() const { return (int)m_Cells[0].size(); }
-	int GetHeight() const { return (int)m_Cells.size(); }
-
-	bool IsValid(int x, int y) const;
-	bool IsWall(int x, int y) const;
+	int GetWidth() const { return (int)m_Cells.size(); }
+	int GetHeight() const { return (int)m_Cells[0].size(); }
 
 	Cell GetCell(int x, int y) const { return m_Cells[x][y]; };
 	const Robot* GetRobot() const { return m_Robot; }

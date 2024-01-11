@@ -20,9 +20,9 @@ void UILayer::OnUpdate()
 	int robotX = robot->GetCoordX();
 	int robotY = robot->GetCoordY();
 
-	for (int x = 0; x < m_Maze->GetWidth(); ++x)
+	for (int y = 0; y < m_Maze->GetHeight(); ++y)
 	{
-		for (int y = 0; y < m_Maze->GetHeight(); ++y)
+		for (int x = 0; x < m_Maze->GetWidth(); ++x)
 		{
 			if (robotX == x && robotY == y)
 			{
@@ -38,9 +38,8 @@ void UILayer::OnUpdate()
 		std::cout << std::endl;
 	}
 
-	std::cout << std::endl << std::endl;
+	std::cout << std::endl << std::endl << std::endl << std::endl;
 }
-
 
 char UILayer::CellToChar(Cell cell)
 {
