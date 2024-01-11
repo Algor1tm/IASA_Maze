@@ -28,8 +28,7 @@ private:
 	int CountVisitedNeighbors(int x, int y);
 
 private:
-	std::vector<int> m_Directions;
-	std::vector<std::pair<int, int>> m_Direction;
+	std::vector<std::pair<int, int>> m_Directions;
 	std::vector<std::vector<Cell>> m_Cells;
 	int m_Width, m_Height;
 	int m_StartPosX, m_StartPosY;

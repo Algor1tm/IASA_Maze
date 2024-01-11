@@ -5,7 +5,7 @@
 
 MazeGenerator::MazeGenerator()
 {
-	m_Directions = { 0, 1, 2, 3 };
+	m_Directions = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 }
 
 void MazeGenerator::SetFinish(int x, int y)
@@ -55,15 +55,12 @@ bool MazeGenerator::IsValid(int x, int y) const
 
 int MazeGenerator::CountVisitedNeighbors(int x, int y)
 {
-	const int dX[] = { 0, 0, 1, -1 };
-	const int dY[] = { 1, -1, 0, 0 };
-
 	int count = 0;
 
-	for (int dir : m_Directions)
+	for (auto [offsetX, offsetY] : m_Directions)
 	{
-		int nx = x + dX[dir];
-		int ny = y + dY[dir];
+		int nx = x + offsetX;
+		int ny = y + offsetY;
 
 		if (!IsValid(nx, ny))
 			continue;
@@ -77,16 +74,13 @@ int MazeGenerator::CountVisitedNeighbors(int x, int y)
 
 void MazeGenerator::DFS(int x, int y)
 {
-	const int dX[] = { 0, 0, 1, -1 };
-	const int dY[] = { 1, -1, 0, 0 };
-
 	std::shuffle(m_Directions.begin(), m_Directions.end(), Application::Get().GetRandomEngine());
 
-	for (int dir : m_Directions)
+	for (auto [offsetX, offsetY] : m_Directions)
 	{
 		// Get random neighbour not visited cell
-		int nx = x + dX[dir];
-		int ny = y + dY[dir];
+		int nx = x + offsetX;
+		int ny = y + offsetY;
 
 		if (!IsValid(nx, ny))
 			continue;
