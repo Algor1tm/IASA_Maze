@@ -4,7 +4,7 @@
 
 Maze::Maze()
 {
-	m_Robot = new Robot(this, 0, 0);
+	m_Robot = new Robot(new JumperRobotBehaviour(), this, 0, 0);
 
 	unsigned int width = 20;
 	unsigned int height = 10;

@@ -6,6 +6,7 @@
 
 
 class Maze;
+class RobotBehaviour;
 
 namespace std
 {
@@ -23,29 +24,93 @@ namespace std
 	};
 }
 
+class PathFinder
+{
+public:
+	PathFinder();
 
-// For now only 1 Robot, later extend to 4 type of robots and 1 abstract
+	void Start(const Maze* maze, int currentX, int currentY);
+
+	bool HasPath() const;
+	bool FindPath() const;
+
+	std::pair<int, int> FindNextCell(RobotBehaviour* behaviour);
+	bool IsVisited(int x, int y) const;
+
+private:
+	void CheckNeighbours(RobotBehaviour* behaviour);
+	void TryAddNeighbour(int offsetX, int offsetY);
+
+private:
+	const Maze* m_Maze;
+	std::stack<std::pair<int, int>> m_DFSStack;
+	std::stack<std::pair<int, int>> m_Path;
+	std::unordered_map<std::pair<int, int>, bool> m_VisitedCellsMap;
+	int m_CoordX, m_CoordY;
+	bool m_FindPath;
+};
+
+
 class Robot
 {
 public:
-	Robot(Maze* maze, int startX, int startY);
+	Robot(RobotBehaviour* behaviour, Maze* maze, int startX, int startY);
+	~Robot();
 
-	int GetCoordX() const { return m_CoordX; }
-	int GetCoordY() const { return m_CoordY; }
+	int GetCoordX() const;
+	int GetCoordY() const;
 
 	void Start();
 	void Step();
 
 private:
-	void CheckNeighbours();
-	void TryAddNeighbour(int offsetX, int offsetY);
-	bool IsVisited(int x, int y) const;
+	Maze* m_Maze;
+	PathFinder m_PathFinder;
+	RobotBehaviour* m_Behaviour;
+	int m_CoordX, m_CoordY;
+};
+
+
+class RobotBehaviour
+{
+public:
+	virtual const std::vector<std::pair<int, int>>& GetAllPossibleMoves() = 0;
+};
+
+
+class DefaultRobotBehaviour : public RobotBehaviour
+{
+public:
+	DefaultRobotBehaviour();
+	virtual const std::vector<std::pair<int, int>>& GetAllPossibleMoves() override;
 
 private:
-	Maze* m_Maze;
-	int m_CoordX, m_CoordY;
-	std::vector<std::pair<int, int>> m_Directions;
-	std::stack<std::pair<int, int>> m_DFSStack;
-	std::stack<std::pair<int, int>> m_Path;
-	std::unordered_map<std::pair<int, int>, bool> m_VisitedCellsMap;
+	std::vector<std::pair<int, int>> m_Moves;
+};
+
+
+class DiagonalRobotBehaviour : public RobotBehaviour
+{
+public:
+	DiagonalRobotBehaviour();
+	virtual const std::vector<std::pair<int, int>>& GetAllPossibleMoves() override;
+
+private:
+	std::vector<std::pair<int, int>> m_Moves;
+};
+
+
+class JumperRobotBehaviour : public RobotBehaviour
+{
+public:
+	JumperRobotBehaviour();
+	virtual const std::vector<std::pair<int, int>>& GetAllPossibleMoves() override;
+
+private:
+	const int m_DefaultDelay = 5;
+
+private:
+	int m_DelayBeforeJump;
+	std::vector<std::pair<int, int>> m_NoJumpMoves;
+	std::vector<std::pair<int, int>> m_AllMoves;
 };
