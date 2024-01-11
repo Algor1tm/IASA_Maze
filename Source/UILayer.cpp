@@ -7,7 +7,7 @@
 
 UILayer::UILayer()
 {
-
+	m_GameFinished = false;
 }
 
 UILayer::~UILayer()
@@ -40,25 +40,41 @@ void UILayer::OnUpdate()
 	}
 
 	std::cout << std::endl << std::endl << std::endl;
+
+	if (m_GameFinished)
+	{
+		std::cout << "Game is finished!\n";
+		return;
+	}
 }
 
 void UILayer::OnGameEvent(GameEvent event)
 {
-	using namespace std::chrono;
-
-	if (event == GameEvent::Start)
+	switch (event)
 	{
+	case GameEvent::Start:
+	{
+		using namespace std::chrono;
+
 		const Robot* robot = m_Maze->GetRobot();
 
 		std::cout << "--------------------MAZE SIMULATION--------------------\n";
+		std::cout << "FPS: " << Application::Get().GetFPSLimit() << std::endl;
 		std::cout << "Maze: width = " << m_Maze->GetWidth() << ", height = " << m_Maze->GetHeight() << std::endl;
 		std::cout << "Robot 1: start pos = (" << robot->GetCoordX() << ", " << robot->GetCoordY() << ")\n";
 
-		const int seconds = 5;
+		const int seconds = 1;
 		std::cout << "Start in " << seconds << " seconds!\n\n\n";
 
 		steady_clock::time_point timePoint = high_resolution_clock::now() + std::chrono::seconds(seconds);
 		std::this_thread::sleep_until(timePoint);
+		break;
+	}
+	case GameEvent::Finish:
+	{
+		m_GameFinished = true;
+		break;
+	}
 	}
 }
 

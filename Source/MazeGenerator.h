@@ -2,7 +2,6 @@
 
 #include "Maze.h"
 
-#include <random>
 
 
 // Random acyclic maze generator
@@ -27,8 +26,8 @@ private:
 	int CountVisitedNeighbors(int x, int y);
 
 private:
-	std::mt19937 m_RandomEngine;
 	std::vector<int> m_Directions;
+	std::vector<std::pair<int, int>> m_Direction;
 	std::vector<std::vector<Cell>> m_Cells;
 	int m_Width, m_Height;
 	int m_StartPosX, m_StartPosY;

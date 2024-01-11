@@ -20,4 +20,5 @@ private:
 
 private:
 	const Maze* m_Maze = nullptr;
+	bool m_GameFinished;
 };

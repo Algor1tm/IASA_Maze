@@ -4,6 +4,7 @@
 #include "Layer.h"
 
 #include <vector>
+#include <random>
 
 
 // Pattern Singletone
@@ -20,7 +21,10 @@ public:
 	void Run();
 
 	void QueueGameEvent(GameEvent event);
+
 	void SetFPSLimit(float limit);
+	float GetFPSLimit() const { return m_FPSLimit; }
+	std::mt19937& GetRandomEngine() { return m_RandomEngine; };
 
 	static Application& Get() { return *s_Instance; }
 
@@ -32,7 +36,8 @@ private:
 	static Application* s_Instance;
 
 private:
-	float m_FPSLimit;
 	bool m_Run;
+	float m_FPSLimit;
+	std::mt19937 m_RandomEngine;
 	std::vector<Layer*> m_Layers;
 };

@@ -14,15 +14,16 @@ Application::Application()
 	ASSERT(s_Instance == nullptr);
 	s_Instance = this;
 
-	SetFPSLimit(1.f); // 1 frames per second
+	SetFPSLimit(5.f);
+	m_RandomEngine = std::mt19937(std::random_device()());
 
 	GameLayer* gameLayer = new GameLayer();
 	UILayer* uiLayer = new UILayer();
 
 	uiLayer->SetContext(gameLayer->GetMaze());
 
-	m_Layers.push_back(uiLayer);
 	m_Layers.push_back(gameLayer);
+	m_Layers.push_back(uiLayer);
 
 	QueueGameEvent(GameEvent::Start);
 }
@@ -81,7 +82,7 @@ void Application::OnUpdate()
 
 void Application::OnGameEvent(GameEvent event)
 {
-	if (event == GameEvent::Close)
+	if (event == GameEvent::Close || event == GameEvent::Finish)
 	{
 		m_Run = false;
 	}

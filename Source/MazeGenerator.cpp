@@ -1,9 +1,10 @@
 #include "MazeGenerator.h"
 
+#include "Application.h"
+
 
 MazeGenerator::MazeGenerator()
 {
-	m_RandomEngine = std::mt19937(std::random_device()());
 	m_Directions = { 0, 1, 2, 3 };
 	m_Width = 0;
 	m_Height = 0;
@@ -77,7 +78,7 @@ void MazeGenerator::DFS(int x, int y)
 	const int dX[] = { 0, 0, 1, -1 };
 	const int dY[] = { 1, -1, 0, 0 };
 
-	std::shuffle(m_Directions.begin(), m_Directions.end(), m_RandomEngine);
+	std::shuffle(m_Directions.begin(), m_Directions.end(), Application::Get().GetRandomEngine());
 
 	for (int dir : m_Directions)
 	{

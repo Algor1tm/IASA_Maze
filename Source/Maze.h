@@ -13,7 +13,6 @@ enum class CellType
 struct Cell
 {
 	CellType Type;
-	// Maybe add color
 };
 
 

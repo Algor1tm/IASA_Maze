@@ -2,19 +2,23 @@
 
 #include <stack>
 #include <unordered_map>
+#include <xhash>
 
 
 class Maze;
 
-
 namespace std
 {
+	// Cantor pairing used for hashing two integers
+	//https://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
+
 	template<>
 	struct hash<pair<int, int>>
 	{
-		size_t operator()(const pair<int, int>& coords)
+		size_t operator()(const pair<int, int>& p) const
 		{
-
+			int integer = (p.first + p.second) * (p.first + p.second + 1) / 2 + p.first;
+			return hash<int>()(integer);
 		}
 	};
 }
@@ -33,12 +37,15 @@ public:
 	void Step();
 
 private:
-	bool IsVisited(int x, int y);
-	void AddToStack(int offsetX, int offsetY);
+	void CheckNeighbours();
+	void TryAddNeighbour(int offsetX, int offsetY);
+	bool IsVisited(int x, int y) const;
 
 private:
 	Maze* m_Maze;
 	int m_CoordX, m_CoordY;
-	std::stack<std::pair<int, int>> m_Stack;
+	std::vector<std::pair<int, int>> m_Directions;
+	std::stack<std::pair<int, int>> m_DFSStack;
+	std::stack<std::pair<int, int>> m_Path;
 	std::unordered_map<std::pair<int, int>, bool> m_VisitedCellsMap;
 };
