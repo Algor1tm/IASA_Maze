@@ -14,7 +14,11 @@ Maze::Maze()
 	generator.SetFinish(width / 2, height / 2);
 	generator.SetSize(width, height);
 
-	m_Cells = generator.Build();
+	MazeFactory* factory = new RandomMazeFactory();
+	//MazeFactory* factory = new DefaultMazeFactory();
+	generator.SetMazeFactory(factory);
+
+	m_Cells = generator.BuildMaze();
 }
 
 Maze::~Maze()
