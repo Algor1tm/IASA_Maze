@@ -19,7 +19,7 @@ struct Cell
 class Maze
 {
 public:
-	Maze();
+	Maze(FactoryRobots factory);
 	~Maze();
 
 	int GetWidth() const { return (int)m_Cells.size(); }
@@ -39,3 +39,4 @@ private:
 	// For now only 1 Robot, later extend to 4 robots
 	Robot* m_Robot;
 };
+

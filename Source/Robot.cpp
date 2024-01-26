@@ -199,3 +199,20 @@ const std::vector<std::pair<int, int>>& JumperRobotBehaviour::GetAllPossibleMove
 	m_DelayBeforeJump--;
 	return m_NoJumpMoves;
 }
+
+Robot* FactoryRobots::CreateRobot(RobotType type, Maze* maze)
+{
+	if (type == RobotType::Default)
+	{
+		return new Robot(new DefaultRobotBehaviour(), maze, 0, 0);
+	}
+	if (type == RobotType::Jumper)
+	{
+		return new Robot(new JumperRobotBehaviour(), maze, 0, 0);
+	}
+	if (type == RobotType::Diagonal)
+	{
+		return new Robot(new DiagonalRobotBehaviour(), maze, 0, 0);
+	}
+	return new Robot(new DefaultRobotBehaviour(), maze, 0, 0);
+}

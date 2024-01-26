@@ -2,9 +2,9 @@
 #include "MazeGenerator.h"
 
 
-Maze::Maze()
+Maze::Maze(FactoryRobots robotFactory)
 {
-	m_Robot = new Robot(new JumperRobotBehaviour(), this, 0, 0);
+	m_Robot = robotFactory.CreateRobot(RobotType::Default, this);
 
 	unsigned int width = 20;
 	unsigned int height = 10;

@@ -5,7 +5,7 @@
 
 GameLayer::GameLayer()
 {
-	m_Maze = new Maze();
+	m_Maze = new Maze(FactoryRobots());
 }
 
 GameLayer::~GameLayer()

@@ -114,3 +114,16 @@ private:
 	std::vector<std::pair<int, int>> m_NoJumpMoves;
 	std::vector<std::pair<int, int>> m_AllMoves;
 };
+
+enum class RobotType
+{
+	Default,
+	Jumper,
+	Diagonal
+};
+
+class FactoryRobots
+{
+public:
+	Robot* CreateRobot(RobotType type, Maze* maze);
+};
