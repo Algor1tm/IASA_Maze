@@ -11,9 +11,6 @@ public:
 	~GameLayer();
 
 	virtual void OnUpdate() override;
-	virtual void OnGameEvent(GameEvent event) override;
-
-	const Maze* GetMaze() const { return m_Maze; }
 
 private:
 	Maze* m_Maze;

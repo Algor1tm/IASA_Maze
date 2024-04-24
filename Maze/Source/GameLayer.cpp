@@ -1,6 +1,7 @@
 #include "GameLayer.h"
+#include "Application.h"
 
-#include <iostream>
+#include <raylib.h>
 
 
 GameLayer::GameLayer()
@@ -15,13 +16,20 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnUpdate()
 {
-	m_Maze->Step();
-}
+	Renderer& renderer = Application::Get().GetRenderer();
 
-void GameLayer::OnGameEvent(GameEvent event)
-{
-	if (event == GameEvent::Start)
+	int viewportWidth = renderer.GetViewportWidth();
+	int viewportHeight = renderer.GetViewportHeight();
+
+	Vector2 mousePos = GetMousePosition();
+
+	renderer.Clear(RAYWHITE);
+	renderer.SetFontSize(20);
+
+	if(renderer.Button("Exit!", 700, 400, 200, 100, GREEN))
 	{
-		m_Maze->Start();
+		Application::Get().Close();
 	}
+
+	//m_Maze->Step();
 }

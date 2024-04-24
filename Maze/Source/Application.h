@@ -1,8 +1,11 @@
 #pragma once
 
-#include "GameEvent.h"
+#include "Renderer.h"
+#include "Window.h"
 #include "Layer.h"
 
+#include <iostream>
+#include <format>
 #include <vector>
 #include <random>
 
@@ -19,25 +22,23 @@ public:
 	Application(Application&&) = delete;
 
 	void Run();
+	void Close();
 
-	void QueueGameEvent(GameEvent event);
-
-	void SetFPSLimit(float limit);
-	float GetFPSLimit() const { return m_FPSLimit; }
 	std::mt19937& GetRandomEngine() { return m_RandomEngine; };
+	Renderer& GetRenderer() { return *m_Renderer; }
 
 	static Application& Get() { return *s_Instance; }
 
 private:
 	void OnUpdate();
-	void OnGameEvent(GameEvent event);
 
 private:
 	static Application* s_Instance;
 
 private:
 	bool m_Run;
-	float m_FPSLimit;
 	std::mt19937 m_RandomEngine;
+	Renderer* m_Renderer;
+	Window* m_Window;
 	std::vector<Layer*> m_Layers;
 };

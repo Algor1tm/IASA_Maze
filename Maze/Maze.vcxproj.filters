@@ -33,7 +33,10 @@
     <ClCompile Include="Source\Robot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UILayer.cpp">
+    <ClCompile Include="Source\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -42,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameLayer.h">
@@ -62,7 +62,10 @@
     <ClInclude Include="Source\Robot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UILayer.h">
+    <ClInclude Include="Source\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

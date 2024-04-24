@@ -142,7 +142,7 @@ void Robot::Step()
 
 	if (m_PathFinder.FindPath())
 	{
-		Application::Get().QueueGameEvent(GameEvent::Finish);
+		Application::Get().Close();
 	}
 }
 

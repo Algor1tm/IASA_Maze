@@ -1053,7 +1053,7 @@ RLAPI Vector2 GetScreenToWorld2D(Vector2 position, Camera2D camera); // Get the 
 RLAPI Vector2 GetWorldToScreenEx(Vector3 position, Camera camera, int width, int height); // Get size position for a 3d world space position
 RLAPI Vector2 GetWorldToScreen2D(Vector2 position, Camera2D camera); // Get the screen space position for a 2d camera world space position
 
-// Timing-related functions
+// Timing-related functionsSetConfigFlags
 RLAPI void SetTargetFPS(int fps);                                 // Set target FPS (maximum)
 RLAPI float GetFrameTime(void);                                   // Get time in seconds for last frame drawn (delta time)
 RLAPI double GetTime(void);                                       // Get elapsed time in seconds since InitWindow()
