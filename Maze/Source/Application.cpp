@@ -6,8 +6,7 @@
 
 #include <thread>
 
-#include <SFML/Window.hpp>
-
+#include "raylib.h"
 
 Application* Application::s_Instance = nullptr;
 
@@ -45,7 +44,13 @@ void Application::Run()
 
 	steady_clock::time_point nextFrame = high_resolution_clock::now();
 
-	sf::Window window(sf::VideoMode(800, 600), "Maze");
+	const int screenWidth = 800;
+	const int screenHeight = 450;
+
+	SetTraceLogLevel(LOG_ERROR);
+	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+
+	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
 	m_Run = true;
 
@@ -62,15 +67,19 @@ void Application::Run()
 		// For example, UI window has VSync('60' fps), but game logic updates ones per second.
 		std::this_thread::sleep_until(nextFrame);
 #else
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			// "close requested" event: we close the window
-			if (event.type == sf::Event::Closed)
-				m_Run = false;
-		}
+		BeginDrawing();
+
+		ClearBackground(RAYWHITE);
+		DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+
+		EndDrawing();
+
+		if (WindowShouldClose())
+			m_Run = false;
 #endif
 	}
+
+	CloseWindow();
 }
 
 void Application::QueueGameEvent(GameEvent event)
