@@ -31,7 +31,7 @@ bool PathFinder::HasPath() const
 	return !m_FindPath && !m_DFSStack.empty();
 }
 
-bool PathFinder::FindPath() const
+bool PathFinder::IsFound() const
 {
 	return m_FindPath;
 }
@@ -39,7 +39,7 @@ bool PathFinder::FindPath() const
 std::pair<int, int> PathFinder::FindNextCell(RobotBehaviour* behaviour)
 {
 	if (m_FindPath)
-		return { m_CoordX, m_CoordY };
+		return m_DFSStack.top();
 
 	std::pair<int, int> coords;
 
@@ -52,7 +52,7 @@ std::pair<int, int> PathFinder::FindNextCell(RobotBehaviour* behaviour)
 		m_Path.pop();
 		return coords;
 	}
-
+	
 	// Choose random neighbour and go till dead end or finish
 	coords = m_DFSStack.top();
 	m_CoordX = coords.first;
@@ -87,6 +87,7 @@ void PathFinder::TryAddNeighbour(int offsetX, int offsetY)
 	if (m_Maze->GetCell(coordX, coordY).Type == CellType::Finish)
 	{
 		m_FindPath = true;
+		m_DFSStack.push({ coordX, coordY });
 		return;
 	}
 
@@ -95,9 +96,7 @@ void PathFinder::TryAddNeighbour(int offsetX, int offsetY)
 		if (m_Maze->GetCell(coordX, coordY).Type == CellType::Free)
 		{
 			m_DFSStack.push({ coordX, coordY });
-
 			m_Path.push({ coordX, coordY });
-			m_Path.push({ m_CoordX, m_CoordY });
 		}
 	}
 }
@@ -134,7 +133,7 @@ void Robot::Step()
 
 bool Robot::IsFinished()
 {
-	return m_PathFinder.FindPath();
+	return m_PathFinder.IsFound();
 }
 
 int Robot::GetCoordX() const

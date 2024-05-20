@@ -7,7 +7,7 @@
 Renderer::Renderer(Window* window)
 	: m_Window(window)
 {
-	m_Font = LoadFontEx("Assets/OpenSans-Regular.ttf", 57.f, 0, 250);
+	m_Font = LoadFontEx("Assets/OpenSans-Regular.ttf", 57, 0, 250);
 	SetTextureFilter(m_Font.texture, TEXTURE_FILTER_BILINEAR);
 }
 
@@ -46,8 +46,8 @@ void Renderer::RenderCenteredText(const std::string& text, Vector2 pos, Vector2 
 	Vector2 msize = GetMappedVector2(size);
 
 	Vector2 textSize = MeasureTextEx(m_Font, text.data(), m_FontSize, 1.f);
-	int textX = mpos.x + (msize.x - textSize.x) / 2;
-	int textY = mpos.y + (msize.y - textSize.y) / 2;
+	int textX = int(mpos.x + (msize.x - textSize.x) / 2.f);
+	int textY = int(mpos.y + (msize.y - textSize.y) / 2.f);
 
 	DrawTextEx(m_Font, text.data(), {(float)textX, (float)textY}, m_FontSize, 1.0, color);
 }
@@ -65,8 +65,8 @@ void Renderer::RenderQuad(Texture2D texture, Vector2 pos, Vector2 size, Color ti
 	Vector2 mpos = GetMappedVector2(pos);
 	Vector2 msize = GetMappedVector2(size);
 
-	Rectangle src = { 0, 0, texture.width, texture.height };
-	Rectangle dst = { 0, 0, size.x, size.y };
+	Rectangle src = { 0.f, 0.f, (float)texture.width, (float)texture.height };
+	Rectangle dst = { 0.f, 0.f, (float)size.x, (float)size.y };
 	DrawTexturePro(texture, src, dst, pos, 0.f, tint);
 }
 

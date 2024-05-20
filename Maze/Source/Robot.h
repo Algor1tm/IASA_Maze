@@ -30,7 +30,7 @@ public:
 	PathFinder(const Maze* maze, int currentX, int currentY);
 
 	bool HasPath() const;
-	bool FindPath() const;
+	bool IsFound() const;
 
 	std::pair<int, int> FindNextCell(RobotBehaviour* behaviour);
 	bool IsVisited(int x, int y) const;

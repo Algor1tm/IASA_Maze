@@ -21,6 +21,7 @@ void GameLayer::OnUpdate(float frameTime)
 {
 	Renderer& renderer = Application::Get().GetRenderer();
 
+	// MAZE STEP
 	if (m_GameState == GameState::Play)
 	{
 		m_TimeToMazeStep -= frameTime;
@@ -29,7 +30,7 @@ void GameLayer::OnUpdate(float frameTime)
 		if (m_TimeToMazeStep == 0.f)
 		{
 			m_Maze->Step();
-			m_TimeToMazeStep = 30.f;
+			m_TimeToMazeStep = 60.f;
 
 			if (m_Maze->IsFinished())
 			{
@@ -40,6 +41,7 @@ void GameLayer::OnUpdate(float frameTime)
 
 	renderer.Clear(SKYBLUE);
 
+	// BUTTONS
 	if (m_GameState == GameState::Finish)
 	{
 		renderer.SetFontSize(55.f);
@@ -52,7 +54,7 @@ void GameLayer::OnUpdate(float frameTime)
 	switch (m_GameState)
 	{
 	case GameState::Play:   label = "Pause"; break;
-	case GameState::Pause:   label = "Play"; break;
+	case GameState::Pause:  label = "Play"; break;
 	case GameState::Finish: label = "Restart"; break;
 	}
 
@@ -79,7 +81,7 @@ void GameLayer::OnUpdate(float frameTime)
 		Application::Get().Close();
 	}
 
-	// Grid
+	// GRID
 	renderer.RenderQuad(DARKBLUE, { 9, 4 }, { 100, 80 });
 
 	const Vector2 gridStart = { 9, 4 };
