@@ -6,5 +6,6 @@ class Layer
 public:
 	virtual ~Layer() = default;
 
-	virtual void OnUpdate() {};
+	// frameTime in milliseconds
+	virtual void OnUpdate(float frameTime) {};
 };

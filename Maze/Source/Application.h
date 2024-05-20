@@ -30,7 +30,7 @@ public:
 	static Application& Get() { return *s_Instance; }
 
 private:
-	void OnUpdate();
+	void OnUpdate(float frameTime);
 
 private:
 	static Application* s_Instance;

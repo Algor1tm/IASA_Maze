@@ -27,9 +27,7 @@ namespace std
 class PathFinder
 {
 public:
-	PathFinder();
-
-	void Start(const Maze* maze, int currentX, int currentY);
+	PathFinder(const Maze* maze, int currentX, int currentY);
 
 	bool HasPath() const;
 	bool FindPath() const;
@@ -60,8 +58,8 @@ public:
 	int GetCoordX() const;
 	int GetCoordY() const;
 
-	void Start();
 	void Step();
+	bool IsFinished();
 
 private:
 	Maze* m_Maze;

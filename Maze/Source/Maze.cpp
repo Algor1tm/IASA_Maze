@@ -2,19 +2,16 @@
 #include "MazeGenerator.h"
 
 
-Maze::Maze()
+Maze::Maze(unsigned int width, unsigned int height)
 {
-	m_Robot = new Robot(new DefaultRobotBehaviour(), this, 0, 0);
-
-	unsigned int width = 20;
-	unsigned int height = 10;
-
 	MazeGenerator generator;
-	generator.SetStartPos(m_Robot->GetCoordX(), m_Robot->GetCoordY());
+	generator.SetStartPos(0, 0);
 	generator.SetFinish(width / 2, height / 2);
 	generator.SetSize(width, height);
 
 	m_Cells = generator.Build();
+
+	m_Robot = new Robot(new DefaultRobotBehaviour(), this, 0, 0);
 }
 
 Maze::~Maze()
@@ -22,14 +19,14 @@ Maze::~Maze()
 	delete m_Robot;
 }
 
-void Maze::Start()
-{
-	m_Robot->Start();
-}
-
 void Maze::Step()
 {
 	m_Robot->Step();
+}
+
+bool Maze::IsFinished()
+{
+	return m_Robot->IsFinished();
 }
 
 bool Maze::IsValid(int x, int y) const

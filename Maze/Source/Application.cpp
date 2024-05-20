@@ -3,6 +3,8 @@
 #include "GameLayer.h"
 #include "Debug.h"
 
+#include <filesystem>
+
 
 Application* Application::s_Instance = nullptr;
 
@@ -11,6 +13,8 @@ Application::Application()
 {
 	ASSERT(s_Instance == nullptr);
 	s_Instance = this;
+
+	std::filesystem::current_path("../");
 
 	m_RandomEngine = std::mt19937(std::random_device()());
 
@@ -32,23 +36,31 @@ Application::~Application()
 
 void Application::Run()
 {
+	using namespace std::chrono;
 	m_Run = true;
+
+	steady_clock::duration frameTime = milliseconds(16);
 
 	while (m_Run)
 	{
+		steady_clock::time_point timestamp = high_resolution_clock::now();
+
 		m_Renderer->Begin();
 		
-		OnUpdate();
+		float ms = duration_cast<microseconds>(frameTime).count() / 1000.f;
+		OnUpdate(ms);
 
 		m_Renderer->End();
+
+		frameTime = high_resolution_clock::now() - timestamp;
 	}
 }
 
-void Application::OnUpdate()
+void Application::OnUpdate(float frameTime)
 {
 	for (Layer* layer : m_Layers)
 	{
-		layer->OnUpdate();
+		layer->OnUpdate(frameTime);
 	}
 
 	m_Window->OnUpdate();

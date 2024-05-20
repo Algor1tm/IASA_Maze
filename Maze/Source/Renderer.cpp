@@ -7,12 +7,13 @@
 Renderer::Renderer(Window* window)
 	: m_Window(window)
 {
-
+	m_Font = LoadFontEx("Assets/OpenSans-Regular.ttf", 57.f, 0, 250);
+	SetTextureFilter(m_Font.texture, TEXTURE_FILTER_BILINEAR);
 }
 
 Renderer::~Renderer()
 {
-
+	UnloadFont(m_Font);
 }
 
 void Renderer::Begin()
@@ -33,55 +34,57 @@ void Renderer::Clear(Color color)
 	ClearBackground(color);
 }
 
-void Renderer::RenderText(const std::string& text, int vx, int vy, Color color)
+void Renderer::RenderText(const std::string& text, Vector2 pos, Color color)
 {
-	int x = GetMappedCoordX(vx);
-	int y = GetMappedCoordY(vy);
-
-	DrawText(text.data(), x, y, m_FontSize, color);
+	Vector2 mpos = GetMappedVector2(pos);
+	DrawTextEx(m_Font, text.data(), mpos, m_FontSize, 1.0, color);
 }
 
-void Renderer::RenderCenteredText(const std::string& text, int vx, int vy, int vwidth, int vheight, Color color)
+void Renderer::RenderCenteredText(const std::string& text, Vector2 pos, Vector2 size, Color color)
 {
-	int x = GetMappedCoordX(vx);
-	int y = GetMappedCoordY(vy);
-	int width = GetMappedCoordX(vwidth);
-	int height = GetMappedCoordY(vheight);
-	
-	Vector2 textSize = MeasureTextEx(GetFontDefault(), text.data(), m_FontSize, 1.f);
-	int textX = x + (width - textSize.x) / 2;
-	int textY = y + (height - textSize.y) / 2;
+	Vector2 mpos = GetMappedVector2(pos);
+	Vector2 msize = GetMappedVector2(size);
 
-	DrawText(text.data(), textX, textY, m_FontSize, color);
+	Vector2 textSize = MeasureTextEx(m_Font, text.data(), m_FontSize, 1.f);
+	int textX = mpos.x + (msize.x - textSize.x) / 2;
+	int textY = mpos.y + (msize.y - textSize.y) / 2;
+
+	DrawTextEx(m_Font, text.data(), {(float)textX, (float)textY}, m_FontSize, 1.0, color);
 }
 
-void Renderer::RenderQuad(int vx, int vy, int vwidth, int vheight, Color color)
+void Renderer::RenderQuad(Color color, Vector2 pos, Vector2 size)
 {
-	int x = GetMappedCoordX(vx);
-	int y = GetMappedCoordY(vy);
-	int width = GetMappedCoordX(vwidth);
-	int height = GetMappedCoordY(vheight);
+	Vector2 mpos = GetMappedVector2(pos);
+	Vector2 msize = GetMappedVector2(size);
 
-	DrawRectangle(x, y, width, height, color);
+	DrawRectangle((int)mpos.x, (int)mpos.y, (int)msize.x, (int)msize.y, color);
 }
 
-bool Renderer::Button(const std::string& text, int vx, int vy, int vwidth, int vheight, Color bgcolor, Color textColor)
+void Renderer::RenderQuad(Texture2D texture, Vector2 pos, Vector2 size, Color tint)
 {
-	RenderQuad(vx, vy, vwidth, vheight, bgcolor);
-	RenderCenteredText(text, vx, vy, vwidth, vheight, textColor);
+	Vector2 mpos = GetMappedVector2(pos);
+	Vector2 msize = GetMappedVector2(size);
 
-	int x = GetMappedCoordX(vx);
-	int y = GetMappedCoordY(vy);
-	int width = GetMappedCoordX(vwidth);
-	int height = GetMappedCoordY(vheight);
+	Rectangle src = { 0, 0, texture.width, texture.height };
+	Rectangle dst = { 0, 0, size.x, size.y };
+	DrawTexturePro(texture, src, dst, pos, 0.f, tint);
+}
+
+bool Renderer::Button(const std::string& text, Vector2 pos, Vector2 size, Color bgcolor, Color textColor)
+{
+	RenderQuad(bgcolor, pos, size);
+	RenderCenteredText(text, pos, size, textColor);
+
+	Vector2 mpos = GetMappedVector2(pos);
+	Vector2 msize = GetMappedVector2(size);
 
 	Vector2 mousePos = GetMousePosition();
 
 	bool isMouseInside = true;
-	isMouseInside = isMouseInside && mousePos.x >= x;
-	isMouseInside = isMouseInside && mousePos.y >= y;
-	isMouseInside = isMouseInside && mousePos.x <= x + width;
-	isMouseInside = isMouseInside && mousePos.y <= y + height;
+	isMouseInside = isMouseInside && mousePos.x >= mpos.x;
+	isMouseInside = isMouseInside && mousePos.y >= mpos.y;
+	isMouseInside = isMouseInside && mousePos.x <= mpos.x + msize.x;
+	isMouseInside = isMouseInside && mousePos.y <= mpos.y + msize.y;
 
 	if (!isMouseInside)
 		return false;
@@ -92,21 +95,27 @@ bool Renderer::Button(const std::string& text, int vx, int vy, int vwidth, int v
 	return false;
 }
 
-void Renderer::SetFontSize(int fontSize)
+void Renderer::SetFontSize(float fontSize)
 {
-	m_FontSize = fontSize;
+	float scale = m_CurrentHeight / 720.f;
+	m_FontSize = fontSize * scale;
 }
 
-int Renderer::GetMappedCoordX(int virtualX)
+int Renderer::GetMappedCoordX(float virtualX)
 {
-	float mappedX = (float)virtualX / s_VirtualViewportWidth;
+	float mappedX = (float)virtualX / s_ViewportWidth;
 	mappedX = mappedX * m_CurrentWidth;
 	return (int)std::round(mappedX);
 }
 
-int Renderer::GetMappedCoordY(int virtualY)
+int Renderer::GetMappedCoordY(float virtualY)
 {
-	float mappedY = (float)virtualY / s_VirtualViewportHeight;
+	float mappedY = virtualY / s_ViewportHeight;
 	mappedY = mappedY * m_CurrentHeight;
 	return (int)std::round(mappedY);
+}
+
+Vector2 Renderer::GetMappedVector2(Vector2 vec2)
+{
+	return { (float)GetMappedCoordX(vec2.x), (float)GetMappedCoordY(vec2.y) };
 }

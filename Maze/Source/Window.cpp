@@ -10,7 +10,7 @@ Window::Window(const char* title, unsigned int width, unsigned int height)
 	SetConfigFlags(FLAG_MSAA_4X_HINT);
 	SetConfigFlags(FLAG_VSYNC_HINT);
 
-	SetTraceLogLevel(LOG_ERROR);
+	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(width, height, title);
 }
 

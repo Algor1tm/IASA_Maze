@@ -19,7 +19,7 @@ struct Cell
 class Maze
 {
 public:
-	Maze();
+	Maze(unsigned int width, unsigned int height);
 	~Maze();
 
 	int GetWidth() const { return (int)m_Cells.size(); }
@@ -28,8 +28,8 @@ public:
 	Cell GetCell(int x, int y) const { return m_Cells[x][y]; };
 	const Robot* GetRobot() const { return m_Robot; }
 
-	void Start();
 	void Step();
+	bool IsFinished();
 
 	bool IsValid(int x, int y) const;
 

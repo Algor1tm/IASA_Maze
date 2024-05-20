@@ -5,13 +5,9 @@
 #include <iostream>
 
 
-PathFinder::PathFinder()
+PathFinder::PathFinder(const Maze* maze, int currentX, int currentY)
 {
 	m_FindPath = false;
-}
-
-void PathFinder::Start(const Maze* maze, int currentX, int currentY)
-{
 	m_Maze = maze;
 	m_CoordX = currentX;
 	m_CoordY = currentY;
@@ -32,7 +28,7 @@ void PathFinder::Start(const Maze* maze, int currentX, int currentY)
 
 bool PathFinder::HasPath() const
 {
-	return !m_DFSStack.empty();
+	return !m_FindPath && !m_DFSStack.empty();
 }
 
 bool PathFinder::FindPath() const
@@ -113,7 +109,7 @@ bool PathFinder::IsVisited(int x, int y) const
 
 
 Robot::Robot(RobotBehaviour* behaviour, Maze* maze, int startX, int startY)
-	: m_Behaviour(behaviour), m_Maze(maze), m_CoordX(startX), m_CoordY(startY)
+	: m_PathFinder(m_Maze, m_CoordX, m_CoordY), m_Behaviour(behaviour), m_Maze(maze), m_CoordX(startX), m_CoordY(startY)
 {
 	
 }
@@ -121,11 +117,6 @@ Robot::Robot(RobotBehaviour* behaviour, Maze* maze, int startX, int startY)
 Robot::~Robot()
 {
 	delete m_Behaviour;
-}
-
-void Robot::Start() 
-{
-	m_PathFinder.Start(m_Maze, m_CoordX, m_CoordY);
 }
 
 void Robot::Step()
@@ -139,11 +130,11 @@ void Robot::Step()
 	std::pair<int, int> coords = m_PathFinder.FindNextCell(m_Behaviour);
 	m_CoordX = coords.first;
 	m_CoordY = coords.second;
+}
 
-	if (m_PathFinder.FindPath())
-	{
-		Application::Get().Close();
-	}
+bool Robot::IsFinished()
+{
+	return m_PathFinder.FindPath();
 }
 
 int Robot::GetCoordX() const

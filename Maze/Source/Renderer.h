@@ -8,12 +8,12 @@
 #include <raylib.h>
 
 
-// Virtual Coordinates
-//	(0, 0)		    (1600, 0)
+// Virtual Coordinates (aspect ratio - 16:9)
+//	(0, 0)		    (160, 0)
 //			.
 //			  .
 //				.
-//  (0, 900)	   (1600, 900)
+//  (0, 90)		    (160, 90)
 
 class Renderer
 {
@@ -26,28 +26,32 @@ public:
 
 	void Clear(Color color);
 
-	void RenderText(const std::string& text, int vx, int vy, Color color);
-	void RenderCenteredText(const std::string& text, int vx, int vy, int vwidth, int vheight, Color color);
-	void RenderQuad(int vx, int vy, int vwidth, int vheight, Color color);
+	void RenderQuad(Color color, Vector2 pos, Vector2 size);
+	void RenderQuad(Texture2D texture, Vector2 pos, Vector2 size, Color tint = WHITE);
 
-	bool Button(const std::string& text, int vx, int vy, int vwidth, int vheight, Color bgcolor, Color textColor = BLACK);
+	void RenderText(const std::string& text, Vector2 pos, Color color);
+	void RenderCenteredText(const std::string& text, Vector2 pos, Vector2 size, Color color);
 
-	void SetFontSize(int fontSize);
+	bool Button(const std::string& text, Vector2 pos, Vector2 size, Color bgcolor, Color textColor = BLACK);
 
-	int GetViewportWidth() const { return s_VirtualViewportWidth; }
-	int GetViewportHeight() const { return s_VirtualViewportHeight; }
-
-private:
-	int GetMappedCoordX(int virtualX);
-	int GetMappedCoordY(int virtualY);
+	void SetFontSize(float fontSize);
+	float GetViewportWidth() const { return s_ViewportWidth; }
+	float GetViewportHeight() const { return s_ViewportHeight; }
 
 private:
-	const int s_VirtualViewportWidth = 1600;
-	const int s_VirtualViewportHeight = 900;
+	int GetMappedCoordX(float virtualX);
+	int GetMappedCoordY(float virtualY);
+	Vector2 GetMappedVector2(Vector2 vec2);
+
+private:
+	const float s_ViewportWidth = 160.f;
+	const float s_ViewportHeight = 90.f;
 
 private:
 	Window* m_Window;
 	int m_CurrentWidth;
 	int m_CurrentHeight;
-	int m_FontSize;
+
+	Font m_Font;
+	float m_FontSize;
 };
