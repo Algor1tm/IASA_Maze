@@ -45,12 +45,10 @@ void Application::Run()
 	{
 		steady_clock::time_point timestamp = high_resolution_clock::now();
 
-		m_Renderer->Begin();
-		
-		float ms = duration_cast<microseconds>(frameTime).count() / 1000.f;
-		OnUpdate(ms);
+		float frameTimeMS = duration_cast<microseconds>(frameTime).count() / 1000.f;
+		OnUpdate(frameTimeMS);
 
-		m_Renderer->End();
+		OnRender();
 
 		frameTime = high_resolution_clock::now() - timestamp;
 	}
@@ -64,6 +62,18 @@ void Application::OnUpdate(float frameTime)
 	}
 
 	m_Window->OnUpdate();
+}
+
+void Application::OnRender()
+{
+	m_Renderer->Begin();
+
+	for (Layer* layer : m_Layers)
+	{
+		layer->OnRender(m_Renderer);
+	}
+
+	m_Renderer->End();
 }
 
 void Application::Close()

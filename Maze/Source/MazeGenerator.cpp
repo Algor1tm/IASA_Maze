@@ -10,14 +10,19 @@ MazeGenerator::MazeGenerator()
 
 void MazeGenerator::SetFinish(int x, int y)
 {
-	m_FinishPosX = x;
-	m_FinishPosY = y;
+	if (IsValid(x, y))
+	{
+		m_FinishPosX = x;
+		m_FinishPosY = y;
+	}
 }
 
-void MazeGenerator::SetStartPos(int x, int y)
+void MazeGenerator::AddStartPos(int x, int y)
 {
-	m_StartPosX = x;
-	m_StartPosY = y;
+	if (IsValid(x, y))
+	{
+		m_StartPositions.push_back({ x, y });
+	}
 }
 
 void MazeGenerator::SetSize(int width, int height)
@@ -35,15 +40,17 @@ std::vector<std::vector<Cell>> MazeGenerator::Build()
 		row.resize(m_Height);
 		for (Cell& cell : row)
 		{
-			cell.Type = CellType::Blocked;
+			cell = Cell::Wall;
 		}
 	}
 
-	m_Cells[m_StartPosX][m_StartPosY].Type = CellType::Free;
+	for (Vector2i startPos : m_StartPositions)
+	{
+		m_Cells[startPos.x][startPos.y] = Cell::Path;
+		DFS(startPos.x, startPos.y);
+	}
 
-	DFS(m_StartPosX, m_StartPosY);
-
-	m_Cells[m_FinishPosX][m_FinishPosY].Type = CellType::Finish;
+	m_Cells[m_FinishPosX][m_FinishPosY] = Cell::Finish;
 
 	return m_Cells;
 }
@@ -65,7 +72,7 @@ int MazeGenerator::CountVisitedNeighbors(int x, int y)
 		if (!IsValid(nx, ny))
 			continue;
 
-		if(m_Cells[nx][ny].Type != CellType::Blocked)
+		if(m_Cells[nx][ny] != Cell::Wall)
 			count++;
 	}
 
@@ -85,7 +92,7 @@ void MazeGenerator::DFS(int x, int y)
 		if (!IsValid(nx, ny))
 			continue;
 
-		if (m_Cells[nx][ny].Type != CellType::Blocked)
+		if (m_Cells[nx][ny] != Cell::Wall)
 			continue;
 
 		// prevent cycles
@@ -93,7 +100,7 @@ void MazeGenerator::DFS(int x, int y)
 			continue;
 
 		// Carve path
-		m_Cells[nx][ny].Type = CellType::Free;
+		m_Cells[nx][ny] = Cell::Path;
 
 		// Recursively visit next cell
 		DFS(nx, ny);

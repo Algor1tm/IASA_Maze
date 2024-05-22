@@ -154,6 +154,7 @@
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Vector2i.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Debug.h" />
     <ClInclude Include="Source\GameLayer.h" />

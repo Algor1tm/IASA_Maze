@@ -2,14 +2,14 @@
 #include "Application.h"
 
 #include <raylib.h>
+#include <raymath.h>
 
 
 GameLayer::GameLayer()
 {
 	m_MazeSize = { 30, 22 };
 
-	m_Maze = new Maze((unsigned int)m_MazeSize.x, (unsigned int)m_MazeSize.y);
-	m_GameState = GameState::Pause;
+	Restart();
 }
 
 GameLayer::~GameLayer()
@@ -19,8 +19,6 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnUpdate(float frameTime)
 {
-	Renderer& renderer = Application::Get().GetRenderer();
-
 	// MAZE STEP
 	if (m_GameState == GameState::Play)
 	{
@@ -30,7 +28,7 @@ void GameLayer::OnUpdate(float frameTime)
 		if (m_TimeToMazeStep == 0.f)
 		{
 			m_Maze->Step();
-			m_TimeToMazeStep = 60.f;
+			m_TimeToMazeStep = 100.f;
 
 			if (m_Maze->IsFinished())
 			{
@@ -38,51 +36,63 @@ void GameLayer::OnUpdate(float frameTime)
 			}
 		}
 	}
+}
 
-	renderer.Clear(SKYBLUE);
+void GameLayer::OnRender(Renderer* renderer)
+{
+	renderer->Clear(SKYBLUE);
 
-	// BUTTONS
 	if (m_GameState == GameState::Finish)
 	{
-		renderer.SetFontSize(55.f);
-		renderer.RenderText("Maze is Finished!", { 115, 10 }, WHITE);
+		renderer->SetFontSize(55.f);
+		renderer->RenderText("Maze is Finished!", { 115, 5 }, WHITE);
+
+		renderer->SetFontSize(32.f);
+
+		float yOffset = 0;
+		std::vector<Robot*> robots = m_Maze->GetRobots();
+		std::sort(robots.begin(), robots.end(), [](Robot* left, Robot* right) { return left->GetStepsCount() < right->GetStepsCount(); });
+
+		for (int i = 0; i < (int)robots.size(); ++i)
+		{
+			renderer->RenderQuad(m_RobotsColorMap[robots[i]], { 120.f, 15.f + yOffset }, { 2.f, 2.f });
+
+			std::string text = std::format("Steps count: {}", robots[i]->GetStepsCount());
+			renderer->RenderText(text, { 123.f, 14.f + yOffset }, WHITE);
+
+			yOffset += 7.f;
+		}
 	}
-
-	renderer.SetFontSize(42.f);
-
-	std::string label;
-	switch (m_GameState)
+	else
 	{
-	case GameState::Play:   label = "Pause"; break;
-	case GameState::Pause:  label = "Play"; break;
-	case GameState::Finish: label = "Restart"; break;
+		renderer->SetFontSize(42.f);
+
+		std::string label = m_GameState == GameState::Play ? "Pause" : "Play";
+		if (renderer->Button(label, { 125, 27 }, { 20, 10 }, GREEN))
+		{
+			if (m_GameState == GameState::Play)
+				m_GameState = GameState::Pause;
+
+			else if (m_GameState == GameState::Pause)
+				m_GameState = GameState::Play;
+		}
 	}
 
-	if (renderer.Button(label, { 125, 30 }, { 20, 10 }, GREEN))
+
+	renderer->SetFontSize(42.f);
+
+	if (renderer->Button("Restart", { 125, 42 }, { 20, 10 }, GREEN))
 	{
-		if (m_GameState == GameState::Play)
-		{
-			m_GameState = GameState::Pause;
-		}
-		else if (m_GameState == GameState::Pause)
-		{
-			m_GameState = GameState::Play;
-		}
-		else if (m_GameState == GameState::Finish)
-		{
-			delete m_Maze;
-			m_Maze = new Maze((unsigned int)m_MazeSize.x, (unsigned int)m_MazeSize.y);
-			m_GameState = GameState::Play;
-		}
+		Restart();
 	}
 
-	if (renderer.Button("Exit", { 125, 50 }, { 20, 10 }, GREEN))
+	if (renderer->Button("Exit", { 125, 57 }, { 20, 10 }, GREEN))
 	{
 		Application::Get().Close();
 	}
 
 	// GRID
-	renderer.RenderQuad(DARKBLUE, { 9, 4 }, { 100, 80 });
+	renderer->RenderQuad(DARKBLUE, { 9, 4 }, { 100, 80 });
 
 	const Vector2 gridStart = { 9, 4 };
 	const Vector2 gridSize = { 100, 80 };
@@ -99,7 +109,7 @@ void GameLayer::OnUpdate(float frameTime)
 	{
 		for (int x = 0; x < m_MazeSize.x; ++x)
 		{
-			RenderCell(x, y, pos, cellSize);
+			RenderCell(renderer, x, y, pos, cellSize);
 			pos.x += cellSize.x + cellPadding.x;
 		}
 
@@ -108,28 +118,64 @@ void GameLayer::OnUpdate(float frameTime)
 	}
 }
 
-void GameLayer::RenderCell(int x, int y, Vector2 pos, Vector2 size)
+void GameLayer::RenderCell(Renderer* renderer, int x, int y, Vector2 pos, Vector2 size)
 {
-	Renderer& renderer = Application::Get().GetRenderer();
+	Cell cellType = m_Maze->GetCell(x, y);
 
-	const Robot* robot = m_Maze->GetRobot();
-
-	if (x == robot->GetCoordX() && y == robot->GetCoordY())
+	if (cellType == Cell::Finish)
 	{
-		renderer.RenderQuad(MAGENTA, pos, size);
+		renderer->RenderQuad(RED, pos, size);
+		renderer->SetFontSize(32.f);
+		renderer->RenderCenteredText("?", pos, size, WHITE);
+		return;
 	}
-	else
+	else if (cellType == Cell::Wall)
 	{
-		CellType cellType = m_Maze->GetCell(x, y).Type;
+		renderer->RenderQuad(BLACK, pos, size);
+		return;
+	}
 
-		Color color = WHITE;
-		switch (cellType)
+	Color cellColor = WHITE;
+	const std::vector<Robot*>& robots = m_Maze->GetRobots();
+
+	for (int i = 0; i < (int)robots.size(); ++i)
+	{
+		if (x == robots[i]->GetCoordX() && y == robots[i]->GetCoordY())
 		{
-		case CellType::Free:	color = WHITE; break;
-		case CellType::Blocked: color = BLACK; break;
-		case CellType::Finish:  color = RED; break;
+			cellColor = m_RobotsColorMap[robots[i]];
+			break;
 		}
 
-		renderer.RenderQuad(color, pos, size);
+		if (robots[i]->IsCellVisited(x, y))
+		{
+			cellColor = Lerp(m_RobotsColorMap[robots[i]], cellColor, 1.f / 2.f);
+		}
 	}
+
+	renderer->RenderQuad(cellColor, pos, size);
+}
+
+void GameLayer::Restart()
+{
+	delete m_Maze;
+	m_Maze = new Maze((int)m_MazeSize.x, (int)m_MazeSize.y);
+	m_GameState = GameState::Pause;
+
+	const std::vector<Robot*>& robots = m_Maze->GetRobots();
+
+	m_RobotsColorMap[robots[0]] = MAGENTA;
+	m_RobotsColorMap[robots[1]] = Color(0, 255, 255, 255);
+	m_RobotsColorMap[robots[2]] = GOLD;
+	m_RobotsColorMap[robots[3]] = GREEN;
+}
+
+Color GameLayer::Lerp(const Color& c1, const Color& c2, float t)
+{
+	Color result;
+	result.r = c1.r + (unsigned char)std::round(t * (float)(c2.r - c1.r));
+	result.g = c1.g + (unsigned char)std::round(t * (float)(c2.g - c1.g));
+	result.b = c1.b + (unsigned char)std::round(t * (float)(c2.b - c1.b));
+	result.a = c1.a + (unsigned char)std::round(t * (float)(c2.a - c1.a));
+
+	return result;
 }

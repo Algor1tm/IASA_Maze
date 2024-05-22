@@ -28,7 +28,7 @@ PathFinder::PathFinder(const Maze* maze, int currentX, int currentY)
 
 bool PathFinder::HasPath() const
 {
-	return !m_FindPath && !m_DFSStack.empty();
+	return !m_DFSStack.empty();
 }
 
 bool PathFinder::IsFound() const
@@ -36,68 +36,80 @@ bool PathFinder::IsFound() const
 	return m_FindPath;
 }
 
-std::pair<int, int> PathFinder::FindNextCell(RobotBehaviour* behaviour)
+Vector2i PathFinder::FindNextCell(RobotStrategy* strategy)
 {
-	if (m_FindPath)
-		return m_DFSStack.top();
+	Vector2i dfsTop = m_DFSStack.top();
 
-	std::pair<int, int> coords;
+	if (m_Maze->GetCell(dfsTop.x, dfsTop.y) == Cell::Finish)
+	{
+		m_FindPath = true;
+		m_CoordX = dfsTop.x;
+		m_CoordY = dfsTop.y;
+		return dfsTop;
+	}
 
 	// Go back to next neighbour
-	if (m_Path.top() != m_DFSStack.top())
+	if(m_Path.top() != dfsTop)
 	{
-		coords = m_Path.top();
-		m_CoordX = coords.first;
-		m_CoordY = coords.second;
+		Vector2i pathTop = m_Path.top();
+		m_CoordX = pathTop.x;
+		m_CoordY = pathTop.y;
 		m_Path.pop();
-		return coords;
+		return pathTop;
 	}
 	
-	// Choose random neighbour and go till dead end or finish
-	coords = m_DFSStack.top();
-	m_CoordX = coords.first;
-	m_CoordY = coords.second;
+	m_CoordX = dfsTop.x;
+	m_CoordY = dfsTop.y;
 	m_DFSStack.pop();
 
 	m_VisitedCellsMap.at({ m_CoordX, m_CoordY }) = true;
 
-	CheckNeighbours(behaviour);
+	CheckNeighbours(strategy);
 
-	return coords;
+	return dfsTop;
 }
 
-void PathFinder::CheckNeighbours(RobotBehaviour* behaviour)
+void PathFinder::CheckNeighbours(RobotStrategy* strategy)
 {
-	for (auto dir : behaviour->GetAllPossibleMoves())
-	{
-		TryAddNeighbour(dir.first, dir.second);
-	}
-}
+	std::vector<Vector2i> neighbours;
+	std::vector<Vector2i> moves = strategy->GetAllPossibleMoves();
 
-void PathFinder::TryAddNeighbour(int offsetX, int offsetY)
-{
-	int coordX = m_CoordX + offsetX;
-	int coordY = m_CoordY + offsetY;
-
-	if (!m_Maze->IsValid(coordX, coordY))
+	for (auto dir : moves)
 	{
-		return;
-	}
+		int coordX = m_CoordX + dir.x;
+		int coordY = m_CoordY + dir.y;
 
-	if (m_Maze->GetCell(coordX, coordY).Type == CellType::Finish)
-	{
-		m_FindPath = true;
-		m_DFSStack.push({ coordX, coordY });
-		return;
-	}
+		if (!m_Maze->IsValid(coordX, coordY))
+			continue;
 
-	if (!IsVisited(coordX, coordY))
-	{
-		if (m_Maze->GetCell(coordX, coordY).Type == CellType::Free)
+		if (m_Maze->GetCell(coordX, coordY) == Cell::Finish)
 		{
 			m_DFSStack.push({ coordX, coordY });
-			m_Path.push({ coordX, coordY });
+			return;
 		}
+
+		if (m_Maze->GetCell(coordX, coordY) == Cell::Wall)
+			continue;
+
+		if (IsVisited(coordX, coordY))
+			continue;
+
+		neighbours.push_back({ coordX, coordY });
+	}
+
+	if (neighbours.empty())
+		m_Path.pop();
+
+ 	for (size_t i = 0; i < neighbours.size(); ++i)
+	{
+		int coordX = neighbours[i].x;
+		int coordY = neighbours[i].y;
+
+		if (i > 0)
+			m_Path.push({ m_CoordX, m_CoordY });
+
+		m_Path.push({ coordX, coordY });
+		m_DFSStack.push({ coordX, coordY });
 	}
 }
 
@@ -106,16 +118,18 @@ bool PathFinder::IsVisited(int x, int y) const
 	return m_VisitedCellsMap.at({ x, y });
 }
 
-
-Robot::Robot(RobotBehaviour* behaviour, Maze* maze, int startX, int startY)
-	: m_PathFinder(m_Maze, m_CoordX, m_CoordY), m_Behaviour(behaviour), m_Maze(maze), m_CoordX(startX), m_CoordY(startY)
+Robot::Robot(RobotStrategy* strategy, Maze* maze, int startX, int startY)
+	: m_PathFinder(maze, startX, startY), m_Strategy(strategy)
 {
-	
+	m_Maze = maze;
+	m_CoordX = startX;
+	m_CoordY = startY;
+	m_StepsCount = 0;
 }
 
 Robot::~Robot()
 {
-	delete m_Behaviour;
+	delete m_Strategy;
 }
 
 void Robot::Step()
@@ -126,12 +140,17 @@ void Robot::Step()
 		return;
 	}
 
-	std::pair<int, int> coords = m_PathFinder.FindNextCell(m_Behaviour);
-	m_CoordX = coords.first;
-	m_CoordY = coords.second;
+	if (m_PathFinder.IsFound())
+		return;
+
+	Vector2i coords = m_PathFinder.FindNextCell(m_Strategy);
+	m_CoordX = coords.x;
+	m_CoordY = coords.y;
+
+	m_StepsCount++;
 }
 
-bool Robot::IsFinished()
+bool Robot::IsFinished() const
 {
 	return m_PathFinder.IsFound();
 }
@@ -146,37 +165,47 @@ int Robot::GetCoordY() const
 	return m_CoordY;
 }
 
+int Robot::GetStepsCount() const
+{
+	return m_StepsCount;
+}
 
-DefaultRobotBehaviour::DefaultRobotBehaviour()
+bool Robot::IsCellVisited(int x, int y) const
+{
+	return m_PathFinder.IsVisited(x, y);
+}
+
+
+DefaultRobotStrategy::DefaultRobotStrategy()
 {
 	m_Moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 }
 
-const std::vector<std::pair<int, int>>& DefaultRobotBehaviour::GetAllPossibleMoves()
+const std::vector<Vector2i>& DefaultRobotStrategy::GetAllPossibleMoves()
 {
 	std::shuffle(m_Moves.begin(), m_Moves.end(), Application::Get().GetRandomEngine());
 	return m_Moves;
 }
 
-DiagonalRobotBehaviour::DiagonalRobotBehaviour()
+DiagonalRobotStrategy::DiagonalRobotStrategy()
 {
 	m_Moves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, {-1, -1}, {-1, 1}, {1, 1}, {1, -1} };
 }
 
-const std::vector<std::pair<int, int>>& DiagonalRobotBehaviour::GetAllPossibleMoves()
+const std::vector<Vector2i>& DiagonalRobotStrategy::GetAllPossibleMoves()
 {
 	std::shuffle(m_Moves.begin(), m_Moves.end(), Application::Get().GetRandomEngine());
 	return m_Moves;
 }
 
-JumperRobotBehaviour::JumperRobotBehaviour()
+JumperRobotStrategy::JumperRobotStrategy()
 {
 	m_NoJumpMoves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 	m_AllMoves = { {0, 1}, {0, -1}, {1, 0}, {-1, 0}, {0, 2}, {0, -2}, {2, 0}, {-2, 0} };
 	m_DelayBeforeJump = m_DefaultDelay;
 }
 
-const std::vector<std::pair<int, int>>& JumperRobotBehaviour::GetAllPossibleMoves()
+const std::vector<Vector2i>& JumperRobotStrategy::GetAllPossibleMoves()
 {
 	if (m_DelayBeforeJump <= 0)
 	{

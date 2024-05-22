@@ -5,28 +5,25 @@
 #include <vector>
 
 
-enum class CellType
+enum class Cell
 {
-	Blocked, Free, Finish
-};
-
-struct Cell
-{
-	CellType Type;
+	Path,
+	Wall,
+	Finish
 };
 
 
 class Maze
 {
 public:
-	Maze(unsigned int width, unsigned int height);
+	Maze(int width, int height);
 	~Maze();
 
 	int GetWidth() const { return (int)m_Cells.size(); }
 	int GetHeight() const { return (int)m_Cells[0].size(); }
 
 	Cell GetCell(int x, int y) const { return m_Cells[x][y]; };
-	const Robot* GetRobot() const { return m_Robot; }
+	const std::vector<Robot*>& GetRobots() const { return m_Robots; }
 
 	void Step();
 	bool IsFinished();
@@ -37,5 +34,5 @@ private:
 	// 2 dimensional table of cells
 	std::vector<std::vector<Cell>> m_Cells;
 	// For now only 1 Robot, later extend to 4 robots
-	Robot* m_Robot;
+	std::vector<Robot*> m_Robots;
 };

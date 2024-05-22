@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Layer.h"
-#include "Maze.h"
 #include "Window.h"
 
 #include <string>

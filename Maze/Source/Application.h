@@ -25,12 +25,11 @@ public:
 	void Close();
 
 	std::mt19937& GetRandomEngine() { return m_RandomEngine; };
-	Renderer& GetRenderer() { return *m_Renderer; }
-
 	static Application& Get() { return *s_Instance; }
 
 private:
 	void OnUpdate(float frameTime);
+	void OnRender();
 
 private:
 	static Application* s_Instance;

@@ -1,6 +1,8 @@
 #pragma once
 
 
+class Renderer;
+
 class Layer
 {
 public:
@@ -8,4 +10,5 @@ public:
 
 	// frameTime in milliseconds
 	virtual void OnUpdate(float frameTime) {};
+	virtual void OnRender(Renderer* renderer) {};
 };
