@@ -16,8 +16,8 @@ Maze::Maze(int width, int height)
 	m_Cells = generator.Build();
 
 	m_Robots.push_back(new Robot(new DefaultRobotStrategy(), this, 0, 0));
-	m_Robots.push_back(new Robot(new DefaultRobotStrategy(), this, width - 1, 0));
-	m_Robots.push_back(new Robot(new DefaultRobotStrategy(), this, width - 1, height - 1));
+	m_Robots.push_back(new Robot(new DiagonalRobotStrategy(), this, width - 1, 0));
+	m_Robots.push_back(new Robot(new JumperRobotStrategy(), this, width - 1, height - 1));
 	m_Robots.push_back(new Robot(new DefaultRobotStrategy(), this, 0, height - 1));
 }
 
